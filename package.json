@@ -60,6 +60,7 @@
     "better-sqlite3": "^12.5.0",
     "cheerio": "^1.1.2",
     "class-variance-authority": "^0.7.1",
+    "claude-cookbooks": "github:anthropics/claude-cookbooks",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.1",
     "electron-store": "^11.0.2",
