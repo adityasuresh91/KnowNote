@@ -72,6 +72,7 @@
     "katex": "^0.16.27",
     "lucide-react": "^0.556.0",
     "mammoth": "^1.11.0",
+    "markitdown": "^0.0.4",
     "officeparser": "^5.2.2",
     "ollama-ai-provider": "^1.2.0",
     "ollama-ai-provider-v2": "^1.5.5",
