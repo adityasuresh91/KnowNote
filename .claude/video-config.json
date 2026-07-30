@@ -1,0 +1,53 @@
+{
+  "video": {
+    "enabled": true,
+    "processing": {
+      "maxDuration": 3600,
+      "samplingStrategy": "adaptive",
+      "generateFrameDescriptions": true,
+      "extractMetadata": true,
+      "cleanupTempFiles": true
+    },
+    "formats": {
+      "supported": [
+        "mp4",
+        "webm",
+        "mov",
+        "avi",
+        "mkv",
+        "mpeg",
+        "ogv"
+      ]
+    },
+    "frameSampling": {
+      "short": {
+        "maxDuration": 120,
+        "interval": 1
+      },
+      "medium": {
+        "maxDuration": 600,
+        "interval": 5
+      },
+      "long": {
+        "maxDuration": 3600,
+        "interval": 10
+      },
+      "verylLong": {
+        "maxDuration": null,
+        "interval": 30
+      }
+    },
+    "dependencies": {
+      "ffmpeg": {
+        "required": true,
+        "description": "FFmpeg for video frame extraction",
+        "version": ">=4.0"
+      },
+      "ffprobe": {
+        "required": true,
+        "description": "FFprobe for video metadata extraction",
+        "version": ">=4.0"
+      }
+    }
+  }
+}
