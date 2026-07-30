@@ -36,3 +36,13 @@ desktop.ini
 *.bak
 *.swp
 *~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
