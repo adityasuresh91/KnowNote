@@ -10,6 +10,7 @@ import { MarkdownLoader } from './loaders/MarkdownLoader'
 import { DocxLoader } from './loaders/DocxLoader'
 import { PptLoader } from './loaders/PptLoader'
 import { WebLoader } from './loaders/WebLoader'
+import { VideoLoader } from './loaders/VideoLoader'
 import type { IDocumentLoader, DocumentLoadResult, LoadOptions } from './loaders/types'
 
 /**
@@ -25,10 +26,17 @@ export type SupportedFileType =
   | 'md'
   | 'markdown'
   | 'text'
+  | 'mp4'
+  | 'webm'
+  | 'mov'
+  | 'avi'
+  | 'mkv'
+  | 'mpeg'
+  | 'ogv'
 
 /**
  * 文件解析服务
- * 支持 PDF、Word、PowerPoint、Markdown、纯文本
+ * 支持 PDF、Word、PowerPoint、Markdown、纯文本、视频文件
  */
 export class FileParserService {
   private loaders: Map<string, IDocumentLoader>
@@ -41,7 +49,8 @@ export class FileParserService {
       new MarkdownLoader(),
       new DocxLoader(),
       new PptLoader(),
-      new WebLoader()
+      new WebLoader(),
+      new VideoLoader()
     ]
 
     // 按扩展名和 MIME 类型注册 Loader
@@ -125,7 +134,14 @@ export class FileParserService {
       'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
       'application/vnd.ms-powerpoint': 'ppt',
       'text/plain': 'txt',
-      'text/markdown': 'md'
+      'text/markdown': 'md',
+      'video/mp4': 'mp4',
+      'video/webm': 'webm',
+      'video/quicktime': 'mov',
+      'video/x-msvideo': 'avi',
+      'video/x-matroska': 'mkv',
+      'video/mpeg': 'mpeg',
+      'video/ogg': 'ogv'
     }
     return mimeMap[mimeType] || null
   }
@@ -143,7 +159,14 @@ export class FileParserService {
       txt: 'text/plain',
       text: 'text/plain',
       md: 'text/markdown',
-      markdown: 'text/markdown'
+      markdown: 'text/markdown',
+      mp4: 'video/mp4',
+      webm: 'video/webm',
+      mov: 'video/quicktime',
+      avi: 'video/x-msvideo',
+      mkv: 'video/x-matroska',
+      mpeg: 'video/mpeg',
+      ogv: 'video/ogg'
     }
     return mimeMap[fileType.toLowerCase()] || 'application/octet-stream'
   }
