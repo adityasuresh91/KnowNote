@@ -4,11 +4,7 @@
  */
 
 import { WebFetchService, FetchResult, FetchOptions } from './WebFetchService'
-import {
-  LightpandaBrowserService,
-  LightpandaFetchResult,
-  LightpandaFetchOptions
-} from './LightpandaBrowserService'
+import { LightpandaBrowserService } from './LightpandaBrowserService'
 import Logger from '../../shared/utils/logger'
 
 export interface AdaptiveOptions extends FetchOptions {
@@ -72,7 +68,8 @@ export class BrowserFetchAdapter {
             timeout: opts.timeout,
             extractMainContent: opts.extractMainContent,
             convertToMarkdown: opts.convertToMarkdown,
-            userAgent: opts.userAgent
+            userAgent: opts.userAgent,
+            outputFormat: 'html'
           })
           return this.adaptLightpandaResult(result)
         } catch (error) {
@@ -91,7 +88,13 @@ export class BrowserFetchAdapter {
   /**
    * 将 Lightpanda 结果转换为标准格式
    */
-  private adaptLightpandaResult(result: LightpandaFetchResult): FetchResult {
+  private adaptLightpandaResult(result: {
+    content: string
+    title?: string
+    description?: string
+    url: string
+    mimeType: string
+  }): FetchResult {
     return {
       content: result.content,
       title: result.title,
@@ -99,7 +102,6 @@ export class BrowserFetchAdapter {
       url: result.url,
       mimeType: result.mimeType,
       metadata: {
-        ...result.metadata,
         renderedWithBrowser: true
       }
     }

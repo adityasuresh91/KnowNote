@@ -15,6 +15,7 @@ import { EmbeddingService } from './EmbeddingService'
 import { ChunkingService, type ChunkOptions } from './ChunkingService'
 import { FileParserService } from './FileParserService'
 import { WebFetchService } from './WebFetchService'
+import { BrowserFetchAdapter } from './BrowserFetchAdapter'
 import { vectorStoreManager } from '../vectorstore'
 import { ProviderManager } from '../providers/ProviderManager'
 import Logger from '../../shared/utils/logger'
@@ -71,6 +72,7 @@ export class KnowledgeService {
   private chunkingService: ChunkingService
   private fileParserService: FileParserService
   private webFetchService: WebFetchService
+  private browserFetchAdapter: BrowserFetchAdapter
   private knowledgeFilesDir: string
 
   constructor(providerManager: ProviderManager) {
@@ -78,6 +80,7 @@ export class KnowledgeService {
     this.chunkingService = new ChunkingService()
     this.fileParserService = new FileParserService()
     this.webFetchService = new WebFetchService()
+    this.browserFetchAdapter = new BrowserFetchAdapter()
     // 知识库文件存储目录
     this.knowledgeFilesDir = join(app.getPath('userData'), 'knowledge-files')
     this.ensureKnowledgeFilesDir()
@@ -496,15 +499,57 @@ export class KnowledgeService {
 
   /**
    * 从 URL 添加文档
+   * @param notebookId 笔记本 ID
+   * @param url 网页 URL
+   * @param onProgress 进度回调
+   * @param enableJavaScript 是否启用 JavaScript 渲染（用于复杂页面）
    */
   async addDocumentFromUrl(
     notebookId: string,
     url: string,
-    onProgress?: IndexProgressCallback
+    onProgress?: IndexProgressCallback,
+    enableJavaScript: boolean = false
   ): Promise<string> {
     onProgress?.('fetching_url', 0)
 
-    const fetchResult = await this.webFetchService.fetchUrl(url)
+    let fetchResult
+    try {
+      // 首先尝试标准方法抓取
+      fetchResult = await this.webFetchService.fetchUrl(url)
+
+      // 如果内容较少且启用了 JavaScript，尝试用 Lightpanda 重新抓取
+      if (enableJavaScript && fetchResult.content.length < 500) {
+        Logger.info(
+          'KnowledgeService',
+          'Content seems insufficient, trying with Lightpanda browser'
+        )
+        try {
+          fetchResult = await this.browserFetchAdapter.fetchUrl(url, {
+            enableJavaScript: true,
+            extractMainContent: true,
+            convertToMarkdown: true,
+            fallbackOnError: false
+          })
+        } catch (error) {
+          Logger.warn('KnowledgeService', 'Lightpanda fetch failed, using standard result:', error)
+          // 继续使用标准结果
+        }
+      }
+    } catch (error) {
+      // 如果标准方法失败，尝试使用 Lightpanda
+      Logger.warn('KnowledgeService', 'Standard fetch failed, trying with Lightpanda:', error)
+      try {
+        fetchResult = await this.browserFetchAdapter.fetchUrl(url, {
+          enableJavaScript: true,
+          extractMainContent: true,
+          convertToMarkdown: true,
+          fallbackOnError: false
+        })
+      } catch (lightpandaError) {
+        Logger.error('KnowledgeService', 'Both fetch methods failed:', lightpandaError)
+        throw new Error(`Failed to fetch URL ${url}`)
+      }
+    }
 
     return this.addDocument(
       notebookId,
@@ -778,6 +823,18 @@ export class KnowledgeService {
       documentCount: docCount?.count || 0,
       chunkCount: chunkCount?.count || 0,
       embeddingCount: embCount?.count || 0
+    }
+  }
+
+  /**
+   * 清理资源
+   */
+  async cleanup(): Promise<void> {
+    try {
+      await this.browserFetchAdapter.cleanup()
+      Logger.info('KnowledgeService', 'Cleanup completed')
+    } catch (error) {
+      Logger.error('KnowledgeService', 'Error during cleanup:', error)
     }
   }
 }

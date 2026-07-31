@@ -1,9 +1,9 @@
 /**
  * LightpandaBrowserService
- * 使用 Lightpanda 浏览器进行网页抓取，支持 JavaScript 渲染和复杂交互
+ * 使用 Lightpanda 浏览器进行网页抓取，支持 JavaScript 渲染
  */
 
-import { Browser, Page } from '@lightpanda/browser'
+import { lightpanda } from '@lightpanda/browser'
 import TurndownService from 'turndown'
 import * as cheerio from 'cheerio'
 import Logger from '../../shared/utils/logger'
@@ -24,30 +24,30 @@ export interface LightpandaFetchResult {
 /**
  * Lightpanda 抓取选项
  */
-export interface LightpandaFetchOptions {
+export interface LightpandaBrowserFetchOptions {
   timeout?: number
-  waitUntilLoad?: boolean
   extractMainContent?: boolean
   convertToMarkdown?: boolean
   userAgent?: string
-  waitForSelector?: string
-  waitForTimeout?: number
+  disableHostVerification?: boolean
+  obeyRobots?: boolean
+  outputFormat?: 'html' | 'markdown'
 }
 
 /**
  * Lightpanda 浏览器服务
  */
 export class LightpandaBrowserService {
-  private browser: Browser | null = null
   private turndown: TurndownService
-  private defaultOptions: Required<Omit<LightpandaFetchOptions, 'waitForSelector'>> = {
+  private defaultOptions: Required<LightpandaBrowserFetchOptions> = {
     timeout: 60000,
-    waitUntilLoad: true,
     extractMainContent: true,
     convertToMarkdown: true,
     userAgent:
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    waitForTimeout: 5000
+    disableHostVerification: false,
+    obeyRobots: true,
+    outputFormat: 'html'
   }
 
   constructor() {
@@ -61,39 +61,20 @@ export class LightpandaBrowserService {
   }
 
   /**
-   * 初始化浏览器
+   * 初始化浏览器（不需要，Lightpanda 已全局初始化）
    */
   async initBrowser(): Promise<void> {
-    if (this.browser) return
-
-    try {
-      this.browser = new Browser()
-      Logger.info('LightpandaBrowserService', 'Browser initialized successfully')
-    } catch (error) {
-      Logger.error('LightpandaBrowserService', 'Failed to initialize browser:', error)
-      throw new Error('Failed to initialize Lightpanda browser')
-    }
+    Logger.info('LightpandaBrowserService', 'Lightpanda browser ready')
   }
 
   /**
    * 抓取网页内容（使用 Lightpanda）
    */
-  async fetchUrl(url: string, options?: LightpandaFetchOptions): Promise<LightpandaFetchResult> {
-    if (!this.browser) {
-      await this.initBrowser()
-    }
-
-    if (!this.browser) {
-      throw new Error('Browser not initialized')
-    }
-
-    const opts: Required<LightpandaFetchOptions> = {
+  async fetchUrl(url: string, options?: LightpandaBrowserFetchOptions): Promise<LightpandaFetchResult> {
+    const opts: Required<LightpandaBrowserFetchOptions> = {
       ...this.defaultOptions,
-      ...options,
-      waitForSelector: options?.waitForSelector
+      ...options
     }
-
-    let page: Page | null = null
 
     try {
       const parsedUrl = new URL(url)
@@ -103,44 +84,22 @@ export class LightpandaBrowserService {
 
       Logger.info('LightpandaBrowserService', `Fetching with Lightpanda: ${url}`)
 
-      // 创建新页面
-      page = await this.browser.newPage()
-
-      // 设置用户代理
-      await page.setUserAgent(opts.userAgent)
-
-      // 导航到 URL
-      await page.goto(url, { waitUntil: opts.waitUntilLoad ? 'load' : 'domcontentloaded' })
-
-      // 等待选择器或超时
-      if (opts.waitForSelector) {
-        try {
-          await page.waitForSelector(opts.waitForSelector, { timeout: opts.waitForTimeout })
-        } catch (error) {
-          Logger.warn('LightpandaBrowserService', `Selector not found: ${opts.waitForSelector}`)
+      // 使用 Lightpanda 的 fetch 函数
+      const result = await lightpanda.fetch(url, {
+        disableHostVerification: opts.disableHostVerification,
+        obeyRobots: opts.obeyRobots,
+        dump: true,
+        dumpOptions: {
+          type: opts.outputFormat
         }
-      }
+      })
 
-      // 获取页面内容
-      const content = await page.content()
-      const pageUrl = page.url()
-      const pageTitle = await page.title()
-
-      // 关闭页面
-      await page.close()
-      page = null
+      // 将结果转换为字符串
+      const html = typeof result === 'string' ? result : result.toString()
 
       // 解析内容
-      return this.parseContent(content, pageUrl || url, pageTitle, opts)
+      return this.parseContent(html, url, opts)
     } catch (error) {
-      if (page) {
-        try {
-          await page.close()
-        } catch (closeError) {
-          Logger.warn('LightpandaBrowserService', 'Error closing page:', closeError)
-        }
-      }
-
       Logger.error('LightpandaBrowserService', 'Failed to fetch URL:', error)
       throw error
     }
@@ -152,13 +111,12 @@ export class LightpandaBrowserService {
   private parseContent(
     html: string,
     url: string,
-    title: string | undefined,
-    options: Required<LightpandaFetchOptions>
+    options: Required<LightpandaBrowserFetchOptions>
   ): LightpandaFetchResult {
     const $ = cheerio.load(html)
 
     // 提取标题
-    const pageTitle = title || $('title').text().trim() || $('h1').first().text().trim()
+    const pageTitle = $('title').text().trim() || $('h1').first().text().trim()
 
     // 提取描述
     const description =
@@ -257,18 +215,10 @@ export class LightpandaBrowserService {
   }
 
   /**
-   * 关闭浏览器
+   * 关闭浏览器（Lightpanda 无需显式关闭）
    */
   async close(): Promise<void> {
-    if (this.browser) {
-      try {
-        await this.browser.close()
-        this.browser = null
-        Logger.info('LightpandaBrowserService', 'Browser closed')
-      } catch (error) {
-        Logger.error('LightpandaBrowserService', 'Error closing browser:', error)
-      }
-    }
+    Logger.info('LightpandaBrowserService', 'Lightpanda cleanup complete')
   }
 
   /**
@@ -284,9 +234,9 @@ export class LightpandaBrowserService {
   }
 
   /**
-   * 检查浏览器是否可用
+   * 检查浏览器是否可用（Lightpanda 总是可用的）
    */
   isBrowserAvailable(): boolean {
-    return this.browser !== null
+    return true
   }
 }
