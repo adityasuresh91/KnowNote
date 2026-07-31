@@ -107,9 +107,9 @@ async cleanup() {
 
 ```typescript
 interface AdaptiveOptions extends FetchOptions {
-  preferLightpanda?: boolean      // Force use of Lightpanda
-  fallbackOnError?: boolean       // Fallback to standard service on error
-  enableJavaScript?: boolean      // Enable JavaScript rendering
+  preferLightpanda?: boolean // Force use of Lightpanda
+  fallbackOnError?: boolean // Fallback to standard service on error
+  enableJavaScript?: boolean // Enable JavaScript rendering
 }
 ```
 
@@ -127,13 +127,13 @@ interface AdaptiveOptions extends FetchOptions {
 
 ```typescript
 interface LightpandaFetchOptions {
-  timeout?: number                // Request timeout (default: 60000ms)
-  waitUntilLoad?: boolean        // Wait for page load (default: true)
-  extractMainContent?: boolean   // Extract main article (default: true)
-  convertToMarkdown?: boolean    // Convert HTML to Markdown (default: true)
-  userAgent?: string             // Custom User-Agent
-  waitForSelector?: string       // CSS selector to wait for
-  waitForTimeout?: number        // Selector timeout (default: 5000ms)
+  timeout?: number // Request timeout (default: 60000ms)
+  waitUntilLoad?: boolean // Wait for page load (default: true)
+  extractMainContent?: boolean // Extract main article (default: true)
+  convertToMarkdown?: boolean // Convert HTML to Markdown (default: true)
+  userAgent?: string // Custom User-Agent
+  waitForSelector?: string // CSS selector to wait for
+  waitForTimeout?: number // Selector timeout (default: 5000ms)
 }
 ```
 
@@ -168,7 +168,7 @@ const adapter = new BrowserFetchAdapter()
 try {
   const result = await adapter.fetchUrl(url, {
     enableJavaScript: true,
-    fallbackOnError: true  // Automatically fallback on error
+    fallbackOnError: true // Automatically fallback on error
   })
 } catch (error) {
   console.error('Failed to fetch URL:', error)
@@ -216,7 +216,7 @@ Increase wait timeouts:
 ```typescript
 const result = await browser.fetchUrl(url, {
   waitForSelector: '.content',
-  waitForTimeout: 10000  // Increase to 10 seconds
+  waitForTimeout: 10000 // Increase to 10 seconds
 })
 ```
 
@@ -229,7 +229,7 @@ const adapter = new BrowserFetchAdapter()
 try {
   // ... fetch operations
 } finally {
-  await adapter.cleanup()  // Important: close browser
+  await adapter.cleanup() // Important: close browser
 }
 ```
 

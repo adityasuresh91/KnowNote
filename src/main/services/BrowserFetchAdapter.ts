@@ -76,7 +76,11 @@ export class BrowserFetchAdapter {
           if (!opts.fallbackOnError) {
             throw error
           }
-          Logger.warn('BrowserFetchAdapter', 'Lightpanda fetch failed, falling back to standard:', error)
+          Logger.warn(
+            'BrowserFetchAdapter',
+            'Lightpanda fetch failed, falling back to standard:',
+            error
+          )
         }
       }
     }

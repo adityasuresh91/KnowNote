@@ -360,9 +360,13 @@ ipcMain.handle('fetch-web-content', async (event, url: string, options) => {
 })
 
 // In renderer process
-const result = await window.electron.ipcRenderer.invoke('fetch-web-content', 'https://example.com', {
-  enableJavaScript: true
-})
+const result = await window.electron.ipcRenderer.invoke(
+  'fetch-web-content',
+  'https://example.com',
+  {
+    enableJavaScript: true
+  }
+)
 ```
 
 ## Best Practices

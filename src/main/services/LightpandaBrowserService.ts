@@ -70,7 +70,10 @@ export class LightpandaBrowserService {
   /**
    * 抓取网页内容（使用 Lightpanda）
    */
-  async fetchUrl(url: string, options?: LightpandaBrowserFetchOptions): Promise<LightpandaFetchResult> {
+  async fetchUrl(
+    url: string,
+    options?: LightpandaBrowserFetchOptions
+  ): Promise<LightpandaFetchResult> {
     const opts: Required<LightpandaBrowserFetchOptions> = {
       ...this.defaultOptions,
       ...options
@@ -204,14 +207,12 @@ export class LightpandaBrowserService {
    * 清理内容
    */
   private cleanContent(content: string): string {
-    return (
-      content
-        .replace(/\n{3,}/g, '\n\n')
-        .split('\n')
-        .map((line) => line.trim())
-        .join('\n')
-        .trim()
-    )
+    return content
+      .replace(/\n{3,}/g, '\n\n')
+      .split('\n')
+      .map((line) => line.trim())
+      .join('\n')
+      .trim()
   }
 
   /**

@@ -45,6 +45,7 @@ async addDocumentFromUrl(
 ```
 
 **Features:**
+
 - Smart fallback: tries standard method first, falls back to Lightpanda if needed
 - Adaptive rendering: automatically uses JavaScript rendering for complex pages
 - Intelligent detection: upgrades to Lightpanda if initial content seems insufficient
@@ -219,6 +220,7 @@ export DEBUG=lightpanda:*
 ### Issue: "Browser initialization fails"
 
 **Solution:**
+
 ```typescript
 const available = await adapter.initLightpanda()
 if (!available) {
@@ -230,6 +232,7 @@ if (!available) {
 ### Issue: "Timeout errors on slow networks"
 
 **Solution:**
+
 ```typescript
 const result = await adapter.fetchUrl(url, {
   timeout: 120000, // increase timeout
@@ -240,6 +243,7 @@ const result = await adapter.fetchUrl(url, {
 ### Issue: "Out of memory with large documents"
 
 **Solution:**
+
 ```typescript
 // Process in smaller batches
 const urls = [...] // large list of URLs
@@ -256,6 +260,7 @@ await adapter.cleanup()
 ### Issue: "Content extraction is incomplete"
 
 **Solution:**
+
 ```typescript
 // Try with Lightpanda for better DOM parsing
 const result = await adapter.fetchUrl(url, {
@@ -271,6 +276,7 @@ const result = await adapter.fetchUrl(url, {
 ### Linux
 
 Ensure system dependencies are installed:
+
 ```bash
 sudo apt-get install libglib2.0-0 libxrender1 libxkbcommon0
 ```
@@ -323,12 +329,12 @@ describe('BrowserFetchAdapter', () => {
 
 Typical performance metrics:
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Standard fetch (HTML) | 50-200ms | Fastest, for static pages |
-| Lightpanda fetch (JS) | 1-3s | Slower, includes rendering |
-| Large document (5MB) | 500-1000ms | Depends on content complexity |
-| Markdown conversion | 50-100ms | Included in fetch time |
+| Operation             | Time       | Notes                         |
+| --------------------- | ---------- | ----------------------------- |
+| Standard fetch (HTML) | 50-200ms   | Fastest, for static pages     |
+| Lightpanda fetch (JS) | 1-3s       | Slower, includes rendering    |
+| Large document (5MB)  | 500-1000ms | Depends on content complexity |
+| Markdown conversion   | 50-100ms   | Included in fetch time        |
 
 ## Resource Cleanup
 
@@ -377,6 +383,7 @@ console.log('Standard service ready:', adapter.getStandardService() !== null)
 ### Report Issues
 
 If you encounter issues, check:
+
 1. `npm run typecheck` passes
 2. All dependencies installed: `pnpm install`
 3. Node version >= 18: `node --version`

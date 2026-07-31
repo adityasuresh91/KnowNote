@@ -75,25 +75,30 @@ KnowNote is for you if:
 ## Key Features
 
 ### 📚 Document Management
+
 - PDF, Word (.docx), PowerPoint (.pptx), and web pages
 - Automatic structure parsing and content extraction
 - Fast local storage with SQLite
 
 ### 🤖 AI-Powered Q&A
+
 - Retrieval-Augmented Generation (RAG)
 - Multiple LLM providers
 - Answers with precise source references
 
 ### 🔒 Local-First by Design
+
 - All data stored locally
 - Offline-friendly (LLM APIs optional)
 - Full control over your knowledge assets
 
 ### 🔍 Vector Search
+
 - Semantic search with sqlite-vec
 - Fast and accurate retrieval
 
 ### ⚡ Lightweight & Cross-Platform
+
 - Electron-based desktop app
 - Windows and macOS support
 
@@ -105,6 +110,7 @@ KnowNote is an early-stage project.
 Some parts are still rough, but the foundation is in place.
 
 I’m sharing it mainly to:
+
 - learn from real usage
 - improve learning and research workflows
 - explore better knowledge visualization and retrieval
@@ -116,6 +122,7 @@ Feedback and suggestions are very welcome.
 ## Roadmap
 
 ### ✅ Completed
+
 - AI LLM conversation with multiple providers
 - Structured note generation
 - One-click mind map generation
@@ -123,11 +130,13 @@ Feedback and suggestions are very welcome.
 - Multi-format document import (PDF / Word / PPT / Web)
 
 ### 🚧 In Development
+
 - Audio upload and transcription
 - Quiz generation from documents
 - One-click PPT generation from notes
 
 ### 📋 Planned
+
 More ideas are in the pipeline — feel free to suggest features in Issues.
 
 ---
@@ -135,18 +144,20 @@ More ideas are in the pipeline — feel free to suggest features in Issues.
 ## Quick Start
 
 ### Download
+
 Get the latest version from GitHub Releases:
 
 - **Windows**: `KnowNote-Setup-{version}.exe`
 - **macOS**: `KnowNote-{version}.dmg` / `KnowNote-{version}-arm64.dmg`
 
 ### Development
+
 ```bash
 git clone https://github.com/MrSibe/KnowNote.git
 cd KnowNote
 pnpm install
 pnpm dev
-````
+```
 
 ---
 
@@ -183,9 +194,9 @@ Issues, discussions, and pull requests are all welcome.
 
 If you have ideas about:
 
-* learning workflows
-* knowledge visualization
-* model/provider abstraction
+- learning workflows
+- knowledge visualization
+- model/provider abstraction
 
 I’d love to hear them.
 
@@ -199,10 +210,10 @@ This project is licensed under the **GPL-3.0 License**.
 
 ## Acknowledgments
 
-* Google NotebookLM — inspiration
-* Electron — cross-platform desktop framework
-* React — UI framework
-* SQLite & sqlite-vec — local storage and vector retrieval
+- Google NotebookLM — inspiration
+- Electron — cross-platform desktop framework
+- React — UI framework
+- SQLite & sqlite-vec — local storage and vector retrieval
 
 ---
 
