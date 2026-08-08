@@ -36,3 +36,4 @@ desktop.ini
 *.bak
 *.swp
 *~
+__pycache__/
